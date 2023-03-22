@@ -1,8 +1,11 @@
 ﻿using KSWD.Commands;
 using KSWD.Model;
+using KSWD.Utils;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace KSWD.ViewModel
 {
@@ -12,6 +15,9 @@ namespace KSWD.ViewModel
         private ItemList _listOfItems;
         private string _link;
         private CommandBase _addCommand;
+        private CommandBase _removeCommand;
+        private CommandBase _downloadCommand;
+        private SteamProxy _steamProxy;
         #endregion
 
         #region Propertys
@@ -32,7 +38,36 @@ namespace KSWD.ViewModel
                 return _addCommand ??
                     (_addCommand = new CommandBase(obj =>
                     {
-                        ListOfItems.AddItem(Link);
+                        _listOfItems.AddItem(Link);
+                        
+                    }));
+            }
+        }
+        public CommandBase RemoveCommand
+        {
+            get
+            {
+                return _removeCommand ??
+                  (_removeCommand = new CommandBase(obj =>
+                  {
+                      SteamItem item = obj as SteamItem;
+                      if (item != null)
+                      {
+                          _listOfItems.RemoveItem(item);
+                      }
+                  },
+                 (obj) => _listOfItems.Items.Count > 0));
+            }
+        }
+        public CommandBase DownloadCommand
+        {
+            get
+            {
+                return _downloadCommand ??
+                    (_downloadCommand = new CommandBase(obj =>
+                    {
+                        //SteamProxy.DownloadItemList(_listOfItems.Items);
+                        _steamProxy.DownloadItems(_listOfItems);
                     }));
             }
         }
@@ -42,7 +77,8 @@ namespace KSWD.ViewModel
         public ItemVM()
         {
             _link = "https://steamcommunity.com/workshop/";
-            ListOfItems = new();
+            _listOfItems = new();
+            _steamProxy = new();
         }
         #endregion
 

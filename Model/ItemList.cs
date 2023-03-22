@@ -61,7 +61,7 @@ namespace KSWD.Model
                 Item = _parser.GetContentByXPath(link, ItemNameXPath) ?? ErrorString,
                 GameID = Regex.Replace(_parser.GetAttributeValueByXPath(link, GameIDXPath) ?? ErrorString, @"[^\d]", ""),
                 ItemID = Regex.Replace(link, @"[^\d]", ""),
-                Author = _parser.GetContentByXPath(link,AuthorXPath) ?? ErrorString
+                Author = _parser.GetContentByXPath(link, AuthorXPath)[..^11] ?? ErrorString
             };
             return item;
         }
